@@ -1,0 +1,28 @@
+---
+docker_debian_package:
+      - docker
+      - docker.io
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+dependencies_package:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+
+docker_redhat_package:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+docker_redhat_dependencies:
+  - dnf-plugins-core
+
+file_redhat_path: "/var/www/html"
+file_debian_path: "/var/www/html"
+

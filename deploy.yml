@@ -1,0 +1,8 @@
+---
+- name: roles test
+  hosts: dockerserver
+  become: true
+  roles:
+    - webapp
+    - docker
+    

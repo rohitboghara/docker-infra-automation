@@ -1,0 +1,19 @@
+---
+- name: copy code
+  copy:
+    src: index.html.j2
+    dest: "{{ file_debian_path }}/index.html"
+  when: ansible_os_family == "Debian"
+- name: Copy code index RedHat
+  copy:
+    src: index.html.j2
+    dest: "{{ file_redhat_path }}/index.html"
+  when: ansible_os_family == "RedHat"
+- name: Docker file copy
+  copy:
+    src: Dockerfile.j2
+    dest: "{{ file_debian_path if ansible_os_family == 'Debian' else file_redhat_path }}/Dockerfile"
+- name: Docker compose file
+  copy:
+    src: docker-compose.yml.j2
+    dest: "{{ file_debian_path if ansible_os_family == 'Debian' else file_redhat_path }}/docker-compose.yml"

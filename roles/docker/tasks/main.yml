@@ -1,0 +1,58 @@
+---
+- name: Update all package to latest version
+  package:
+    name: "*"
+    state: latest
+- name: Ensure dependencies  are installed
+  apt:
+    name: "{{dependencies_package}}"
+    state: present
+  when: ansible_os_family == "Debian"
+- name: Ensure dependencies are install redhat
+  dnf:
+    name: "{{ docker_redhat_dependencies }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: add docker GPG key
+  apt_key:
+    url:  https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg
+    state: present
+  when: ansible_os_family == "Debian"
+- name: add docker CE repository redhat
+  command:
+    cmd: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  args:
+    creates: /etc/yum.repos.d/docker-ce.repo
+  when: ansible_os_family == "RedHat"
+- name: add docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] }} stable"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Docker package
+  apt:
+    name: "{{ docker_debian_package }}"
+    state: present
+  when: ansible_os_family == "Debian"
+- name: Install docker package rehat
+  dnf:
+    name: "{{ docker_redhat_package }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+- name: start docker 
+  service:
+    name: docker
+    state: started
+  when: ansible_os_family == "Debian"
+- name: start docker in redhat
+  service:
+    name: docker 
+    state: started
+  when: ansible_os_family == "RedHat"
+
+- name: docker compose build 
+  community.docker.docker_compose_v2:
+    project_src: "{{ file_debian_path if ansible_os_family == 'Debian' else file_redhat_path }}"
+    state: present

@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Playbook Tester Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 2px solid #cbd5e1;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .section h2 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .output {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .output.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .output.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .output.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .template-section {
+            margin-top: 20px;
+        }
+
+        .template-btn {
+            background: #8b5cf6;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .template-btn:hover {
+            background: #7c3aed;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .module-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .module-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .best-practices-list {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .practice-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3b82f6;
+            background: #f8fafc;
+        }
+
+        .practice-item.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .practice-item.error {
+            border-left-color: #ef4444;
+        }
+
+        .variable-table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .variable-table th,
+        .variable-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .variable-table th {
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+
+        .variable-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .help-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .help-box h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .code-snippet {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 5px 0;
+            overflow-x: auto;
+        }
+
+        .lint-results {
+            margin-top: 15px;
+        }
+
+        .lint-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+
+        .lint-item.info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+
+        .lint-item.warning {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .lint-item.error {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Ansible Playbook Tester Pro</h1>
+            <p>Complete testing, validation, and analysis suite for Ansible playbooks</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('editor')">📝 Editor & Test</button>
+            <button class="tab" onclick="switchTab('generator')">⚙️ Playbook Generator</button>
+            <button class="tab" onclick="switchTab('analyzer')">📊 Advanced Analysis</button>
+            <button class="tab" onclick="switchTab('lint')">🔍 Linter</button>
+            <button class="tab" onclick="switchTab('docs')">📚 Documentation</button>
+        </div>
+
+        <!-- Editor Tab -->
+        <div id="editor" class="tab-content active">
+            <div class="main-content">
+                <div class="section">
+                    <h2><span class="icon">📝</span> Playbook Editor</h2>
+                    <textarea id="playbook" placeholder="Enter your Ansible playbook YAML here...">---
+- name: Example Playbook
+  hosts: webservers
+  become: yes
+  vars:
+    app_name: myapp
+    app_port: 8080
+  
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+    
+    - name: Copy configuration file
+      template:
+        src: /etc/nginx/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart nginx
+    
+    - name: Ensure nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+  
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted</textarea>
+
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="validatePlaybook()">
+                            <span>✓</span> Validate YAML
+                        </button>
+                        <button class="btn-success" onclick="testPlaybook()">
+                            <span>▶</span> Test Playbook
+                        </button>
+                        <button class="btn-warning" onclick="formatYAML()">
+                            <span>✨</span> Format
+                        </button>
+                        <button class="btn-secondary" onclick="exportPlaybook()">
+                            <span>💾</span> Export
+                        </button>
+                        <button class="btn-secondary" onclick="importPlaybook()">
+                            <span>📂</span> Import
+                        </button>
+                        <button class="btn-secondary" onclick="clearEditor()">
+                            <span>✕</span> Clear
+                        </button>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".yml,.yaml" onchange="handleFileImport(event)">
+
+                    <div class="template-section">
+                        <h3 style="margin-bottom: 10px; color: #475569;">Quick Templates:</h3>
+                        <button class="template-btn" onclick="loadTemplate('basic')">Basic Setup</button>
+                        <button class="template-btn" onclick="loadTemplate('docker')">Docker Install</button>
+                        <button class="template-btn" onclick="loadTemplate('users')">User Management</button>
+                        <button class="template-btn" onclick="loadTemplate('security')">Security Hardening</button>
+                        <button class="template-btn" onclick="loadTemplate('monitoring')">Monitoring Setup</button>
+                        <button class="template-btn" onclick="loadTemplate('backup')">Backup Script</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><span class="icon">📊</span> Test Results</h2>
+                    <div id="output" class="output">
+Ready to test your playbook. Click "Validate YAML" or "Test Playbook" to begin.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generator Tab -->
+        <div id="generator" class="tab-content">
+            <div class="section full-width">
+                <h2><span class="icon">⚙️</span> Playbook Generator</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <div class="form-group">
+                            <label>Playbook Name:</label>
+                            <input type="text" id="gen-name" value="My Playbook" placeholder="Enter playbook name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Target Hosts:</label>
+                            <input type="text" id="gen-hosts" value="all" placeholder="e.g., webservers, all">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Privilege Escalation:</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="gen-become" checked>
+                                <label for="gen-become">Use become (sudo)</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Tasks:</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-update" checked>
+                                <label>Update package cache</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-install">
+                                <label>Install packages</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-service">
+                                <label>Manage services</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-copy">
+                                <label>Copy files</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-user">
+                                <label>Create users</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="task-firewall">
+                                <label>Configure firewall</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label>Package Manager:</label>
+                            <select id="gen-pkg-manager">
+                                <option value="apt">APT (Debian/Ubuntu)</option>
+                                <option value="yum">YUM (RHEL/CentOS)</option>
+                                <option value="dnf">DNF (Fedora)</option>
+                                <option value="pacman">Pacman (Arch)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Variables (one per line, format: key=value):</label>
+                            <textarea id="gen-vars" style="min-height: 100px;" placeholder="app_name=myapp&#10;app_port=8080"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Additional Options:</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="gen-handlers">
+                                <label>Include handlers</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="gen-tags">
+                                <label>Add task tags</label>
+                            </div>
+                        </div>
+
+                        <button class="btn-success" onclick="generatePlaybook()" style="width: 100%; margin-top: 20px;">
+                            <span>🚀</span> Generate Playbook
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analyzer Tab -->
+        <div id="analyzer" class="tab-content">
+            <div class="section full-width">
+                <h2><span class="icon">📊</span> Advanced Analysis</h2>
+                <button class="btn-primary" onclick="runAdvancedAnalysis()">
+                    <span>🔬</span> Run Analysis
+                </button>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-plays">0</div>
+                        <div class="stat-label">Total Plays</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-tasks">0</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-handlers">0</div>
+                        <div class="stat-label">Handlers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-vars">0</div>
+                        <div class="stat-label">Variables</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-modules">0</div>
+                        <div class="stat-label">Unique Modules</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-complexity">-</div>
+                        <div class="stat-label">Complexity</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Modules Used:</h3>
+                    <div id="modules-list" class="module-list"></div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Variables Detected:</h3>
+                    <table id="variables-table" class="variable-table">
+                        <thead>
+                            <tr>
+                                <th>Variable Name</th>
+                                <th>Value</th>
+                                <th>Play</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Best Practices Check:</h3>
+                    <div id="best-practices" class="best-practices-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linter Tab -->
+        <div id="lint" class="tab-content">
+            <div class="section full-width">
+                <h2><span class="icon">🔍</span> Ansible Linter</h2>
+                <p style="margin-bottom: 15px; color: #64748b;">Check your playbook for common issues, anti-patterns, and style violations.</p>
+                
+                <button class="btn-primary" onclick="runLinter()">
+                    <span>🔍</span> Run Linter
+                </button>
+
+                <div id="lint-results" class="lint-results"></div>
+            </div>
+        </div>
+
+        <!-- Documentation Tab -->
+        <div id="docs" class="tab-content">
+            <div class="section full-width">
+                <h2><span class="icon">📚</span> Quick Reference</h2>
+                
+                <div class="help-box">
+                    <h3>Common Ansible Modules</h3>
+                    <p><strong>apt/yum/dnf:</strong> Package management</p>
+                    <div class="code-snippet">- name: Install nginx
+  apt:
+    name: nginx
+    state: present</div>
+
+                    <p style="margin-top: 15px;"><strong>service/systemd:</strong> Service management</p>
+                    <div class="code-snippet">- name: Start nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes</div>
+
+                    <p style="margin-top: 15px;"><strong>copy/template:</strong> File management</p>
+                    <div class="code-snippet">- name: Copy config
+  copy:
+    src: /local/file.conf
+    dest: /remote/file.conf
+    mode: '0644'</div>
+
+                    <p style="margin-top: 15px;"><strong>user/group:</strong> User management</p>
+                    <div class="code-snippet">- name: Create user
+  user:
+    name: john
+    groups: sudo
+    shell: /bin/bash</div>
+                </div>
+
+                <div class="help-box" style="margin-top: 20px;">
+                    <h3>Playbook Structure</h3>
+                    <div class="code-snippet">---
+- name: Playbook name
+  hosts: target_hosts
+  become: yes
+  vars:
+    variable_name: value
+  
+  tasks:
+    - name: Task description
+      module_name:
+        parameter: value
+  
+  handlers:
+    - name: Handler name
+      module_name:
+        parameter: value</div>
+                </div>
+
+                <div class="help-box" style="margin-top: 20px;">
+                    <h3>Best Practices</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li>Always name your tasks and plays</li>
+                        <li>Use become only when necessary</li>
+                        <li>Keep playbooks idempotent</li>
+                        <li>Use variables for repeated values</li>
+                        <li>Tag your tasks for selective execution</li>
+                        <li>Use handlers for service restarts</li>
+                        <li>Include error handling with blocks</li>
+                        <li>Document complex logic with comments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPlaybook = null;
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function validatePlaybook() {
+            const playbook = document.getElementById('playbook').value;
+            const output = document.getElementById('output');
+            
+            output.className = 'output';
+            
+            if (!playbook.trim()) {
+                output.className = 'output error';
+                output.textContent = '❌ ERROR: Playbook is empty';
+                return;
+            }
+            
+            try {
+                const parsed = jsyaml.load(playbook);
+                currentPlaybook = parsed;
+                output.className = 'output success';
+                
+                let result = '✅ YAML Validation: PASSED\n\n';
+                result += '📋 Playbook Structure:\n';
+                result += '─────────────────────\n';
+                
+                if (Array.isArray(parsed)) {
+                    parsed.forEach((play, index) => {
+                        result += `\n▶ Play ${index + 1}: ${play.name || 'Unnamed'}\n`;
+                        result += `  Hosts: ${play.hosts || 'Not specified'}\n`;
+                        result += `  Tasks: ${play.tasks ? play.tasks.length : 0}\n`;
+                        
+                        if (play.vars) {
+                            result += `  Variables: ${Object.keys(play.vars).length}\n`;
+                        }
+                        
+                        if (play.handlers) {
+                            result += `  Handlers: ${play.handlers.length}\n`;
+                        }
+                    });
+                } else {
+                    result += '\n⚠ Note: Expected an array of plays\n';
+                }
+                
+                output.textContent = result;
+            } catch (e) {
+                output.className = 'output error';
+                output.textContent = `❌ YAML Syntax Error:\n\n${e.message}`;
+            }
+        }
+        
+        function testPlaybook() {
+            const playbook = document.getElementById('playbook').value;
+            const output = document.getElementById('output');
+            
+            try {
+                const parsed = jsyaml.load(playbook);
+                currentPlaybook = parsed;
+                output.className = 'output';
+                
+                let result = '🧪 Running Playbook Tests...\n\n';
+                result += '═════════════════════════════════\n\n';
+                
+                if (!Array.isArray(parsed)) {
+                    output.className = 'output error';
+                    output.textContent = '❌ Invalid playbook format: Expected an array of plays';
+                    return;
+                }
+                
+                let totalTasks = 0;
+                let warnings = 0;
+                
+                parsed.forEach((play, playIndex) => {
+                    result += `▶ PLAY [${play.name || 'Unnamed'}]\n`;
+                    result += `  Target hosts: ${play.hosts || 'undefined'}\n\n`;
+                    
+                    if (!play.hosts) {
+                        result += `  ⚠ WARNING: No hosts specified\n`;
+                        warnings++;
+                    }
+                    
+                    if (play.tasks) {
+                        play.tasks.forEach((task, taskIndex) => {
+                            totalTasks++;
+                            const taskName = task.name || `Task ${taskIndex + 1}`;
+                            result += `  TASK [${taskName}]\n`;
+                            result += `  ✓ Syntax OK\n`;
+                            
+                            const moduleName = Object.keys(task).find(key => 
+                                key !== 'name' && key !== 'notify' && key !== 'when' && 
+                                key !== 'with_items' && key !== 'register' && key !== 'tags'
+                            );
+                            
+                            if (moduleName) {
+                                result += `  Module: ${moduleName}\n`;
+                            }
+                            
+                            if (!task.name) {
+                                result += `  ⚠ WARNING: Task has no name\n`;
+                                warnings++;
+                            }
+                            
+                            result += '\n';
+                        });
+                    }
+                    
+                    if (play.handlers) {
+                        result += `  Handlers defined: ${play.handlers.length}\n\n`;
+                    }
+                });
+                
+                result += '═════════════════════════════════\n';
+                result += `\n📊 Test Summary:\n`;
+                result += `  Total plays: ${parsed.length}\n`;
+                result += `  Total tasks: ${totalTasks}\n`;
+                result += `  Warnings: ${warnings}\n\n`;
+                
+                if (warnings === 0) {
+                    output.className = 'output success';
+                    result += '✅ All checks passed!';
+                } else {
+                    output.className = 'output warning';
+                    result += '⚠ Completed with warnings';
+                }
+                
+                output.textContent = result;
+            } catch (e) {
+                output.className = 'output error';
+                output.textContent = `❌ Error testing playbook:\n\n${e.message}`;
+            }
+        }
+
+        function formatYAML() {
+            try {
+                const playbook = document.getElementById('playbook').value;
+                const parsed = jsyaml.load(playbook);
+                const formatted = jsyaml.dump(parsed, { indent: 2, lineWidth: -1 });
+                document.getElementById('playbook').value = formatted;
+                document.getElementById('output').className = 'output success';
+                document.getElementById('output').textContent = '✅ Playbook formatted successfully!';
+            } catch (e) {
+                document.getElementById('output').className = 'output error';
+                document.getElementById('output').textContent = `❌ Format Error:\n\n${e.message}`;
+            }
+        }
+
+        function clearEditor() {
+            document.getElementById('playbook').value = '';
+            document.getElementById('output').className = 'output';
+            document.getElementById('output').textContent = 'Editor cleared. Ready for new playbook.';
+        }
+
+        function exportPlaybook() {
+            const playbook = document.getElementById('playbook').value;
+            const blob = new Blob([playbook], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'playbook.yml';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            document.getElementById('output').className = 'output success';
+            document.getElementById('output').textContent = '✅ Playbook exported successfully!';
+        }
+
+        function importPlaybook() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('playbook').value = e.target.result;
+                    document.getElementById('output').className = 'output success';
+                    document.getElementById('output').textContent = `✅ Imported: ${file.name}`;
+                };
+                reader.readAsText(file);
+            }
+        }
+        
+        function loadTemplate(type) {
+            const templates = {
+                basic: `---
+- name: Basic Server Setup
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    
+    - name: Install basic packages
+      apt:
+        name:
+          - vim
+          - curl
+          - git
+          - htop
+        state: present
+    
+    - name: Set timezone
+      timezone:
+        name: UTC`,
+        
+                docker: `---
+- name: Install Docker
+  hosts: docker_hosts
+  become: yes
+  
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+    
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+        update_cache: yes
+    
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes`,
+        
+                users: `---
+- name: User Management
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Create user group
+      group:
+        name: developers
+        state: present
+    
+    - name: Create users
+      user:
+        name: "{{ item }}"
+        groups: developers
+        shell: /bin/bash
+        create_home: yes
+      loop:
+        - alice
+        - bob
+        - charlie
+    
+    - name: Set up SSH keys
+      authorized_key:
+        user: "{{ item }}"
+        state: present
+        key: "{{ lookup('file', '/path/to/{{ item }}.pub') }}"
+      loop:
+        - alice
+        - bob
+        - charlie`,
+
+                security: `---
+- name: Security Hardening
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Update all packages
+      apt:
+        upgrade: dist
+        update_cache: yes
+    
+    - name: Install fail2ban
+      apt:
+        name: fail2ban
+        state: present
+    
+    - name: Configure firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - '22'
+        - '80'
+        - '443'
+    
+    - name: Enable firewall
+      ufw:
+        state: enabled
+    
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: restart sshd
+  
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted`,
+
+                monitoring: `---
+- name: Monitoring Setup
+  hosts: monitoring
+  become: yes
+  
+  vars:
+    node_exporter_version: "1.6.1"
+  
+  tasks:
+    - name: Create monitoring user
+      user:
+        name: monitoring
+        system: yes
+        shell: /bin/false
+    
+    - name: Download node_exporter
+      get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+        dest: /tmp/node_exporter.tar.gz
+    
+    - name: Extract node_exporter
+      unarchive:
+        src: /tmp/node_exporter.tar.gz
+        dest: /usr/local/bin/
+        remote_src: yes
+    
+    - name: Create systemd service
+      copy:
+        dest: /etc/systemd/system/node_exporter.service
+        content: |
+          [Unit]
+          Description=Node Exporter
+          After=network.target
+          
+          [Service]
+          User=monitoring
+          ExecStart=/usr/local/bin/node_exporter
+          
+          [Install]
+          WantedBy=multi-user.target
+    
+    - name: Start node_exporter
+      systemd:
+        name: node_exporter
+        state: started
+        enabled: yes
+        daemon_reload: yes`,
+
+                backup: `---
+- name: Backup Script Setup
+  hosts: all
+  become: yes
+  
+  vars:
+    backup_dir: /backup
+    retention_days: 7
+  
+  tasks:
+    - name: Create backup directory
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Install backup tools
+      apt:
+        name:
+          - rsync
+          - tar
+        state: present
+    
+    - name: Create backup script
+      copy:
+        dest: /usr/local/bin/backup.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          DATE=$(date +%Y%m%d)
+          tar -czf {{ backup_dir }}/backup-$DATE.tar.gz /etc /var/www
+          find {{ backup_dir }} -name "backup-*.tar.gz" -mtime +{{ retention_days }} -delete
+    
+    - name: Setup cron job
+      cron:
+        name: "Daily backup"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/backup.sh"
+        user: root`
+            };
+            
+            document.getElementById('playbook').value = templates[type];
+            document.getElementById('output').className = 'output';
+            document.getElementById('output').textContent = `Template "${type}" loaded. Click "Validate YAML" or "Test Playbook" to analyze.`;
+        }
+
+        function generatePlaybook() {
+            const name = document.getElementById('gen-name').value;
+            const hosts = document.getElementById('gen-hosts').value;
+            const become = document.getElementById('gen-become').checked;
+            const pkgManager = document.getElementById('gen-pkg-manager').value;
+            const varsText = document.getElementById('gen-vars').value;
+
+            let playbook = `---\n- name: ${name}\n  hosts: ${hosts}\n`;
+            
+            if (become) {
+                playbook += `  become: yes\n`;
+            }
+
+            if (varsText.trim()) {
+                playbook += `  vars:\n`;
+                varsText.split('\n').forEach(line => {
+                    const [key, value] = line.split('=');
+                    if (key && value) {
+                        playbook += `    ${key.trim()}: ${value.trim()}\n`;
+                    }
+                });
+            }
+
+            playbook += `\n  tasks:\n`;
+
+            if (document.getElementById('task-update').checked) {
+                playbook += `    - name: Update package cache\n`;
+                playbook += `      ${pkgManager}:\n`;
+                playbook += `        update_cache: yes\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: update\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('task-install').checked) {
+                playbook += `    - name: Install required packages\n`;
+                playbook += `      ${pkgManager}:\n`;
+                playbook += `        name:\n`;
+                playbook += `          - nginx\n`;
+                playbook += `          - git\n`;
+                playbook += `        state: present\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: install\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('task-service').checked) {
+                playbook += `    - name: Ensure service is running\n`;
+                playbook += `      service:\n`;
+                playbook += `        name: nginx\n`;
+                playbook += `        state: started\n`;
+                playbook += `        enabled: yes\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: service\n`;
+                }
+                if (document.getElementById('gen-handlers').checked) {
+                    playbook += `      notify: restart service\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('task-copy').checked) {
+                playbook += `    - name: Copy configuration file\n`;
+                playbook += `      copy:\n`;
+                playbook += `        src: /local/config.conf\n`;
+                playbook += `        dest: /etc/app/config.conf\n`;
+                playbook += `        mode: '0644'\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: config\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('task-user').checked) {
+                playbook += `    - name: Create application user\n`;
+                playbook += `      user:\n`;
+                playbook += `        name: appuser\n`;
+                playbook += `        shell: /bin/bash\n`;
+                playbook += `        create_home: yes\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: users\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('task-firewall').checked) {
+                playbook += `    - name: Configure firewall\n`;
+                playbook += `      ufw:\n`;
+                playbook += `        rule: allow\n`;
+                playbook += `        port: '80'\n`;
+                if (document.getElementById('gen-tags').checked) {
+                    playbook += `      tags: firewall\n`;
+                }
+                playbook += `\n`;
+            }
+
+            if (document.getElementById('gen-handlers').checked) {
+                playbook += `\n  handlers:\n`;
+                playbook += `    - name: restart service\n`;
+                playbook += `      service:\n`;
+                playbook += `        name: nginx\n`;
+                playbook += `        state: restarted\n`;
+            }
+
+            document.getElementById('playbook').value = playbook;
+            switchTab('editor');
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            
+            document.getElementById('output').className = 'output success';
+            document.getElementById('output').textContent = '✅ Playbook generated successfully! You can now validate and test it.';
+        }
+
+        function runAdvancedAnalysis() {
+            try {
+                const playbook = document.getElementById('playbook').value;
+                const parsed = jsyaml.load(playbook);
+
+                if (!Array.isArray(parsed)) {
+                    alert('Invalid playbook format');
+                    return;
+                }
+
+                let totalPlays = parsed.length;
+                let totalTasks = 0;
+                let totalHandlers = 0;
+                let totalVars = 0;
+                let modules = new Set();
+                let variables = [];
+
+                parsed.forEach((play, playIndex) => {
+                    if (play.tasks) {
+                        totalTasks += play.tasks.length;
+                        play.tasks.forEach(task => {
+                            const moduleName = Object.keys(task).find(key => 
+                                key !== 'name' && key !== 'notify' && key !== 'when' && 
+                                key !== 'with_items' && key !== 'register' && key !== 'tags' && 
+                                key !== 'loop' && key !== 'become'
+                            );
+                            if (moduleName) modules.add(moduleName);
+                        });
+                    }
+
+                    if (play.handlers) {
+                        totalHandlers += play.handlers.length;
+                    }
+
+                    if (play.vars) {
+                        totalVars += Object.keys(play.vars).length;
+                        Object.entries(play.vars).forEach(([key, value]) => {
+                            variables.push({
+                                name: key,
+                                value: JSON.stringify(value),
+                                play: play.name || `Play ${playIndex + 1}`
+                            });
+                        });
+                    }
+                });
+
+                // Update stats
+                document.getElementById('stat-plays').textContent = totalPlays;
+                document.getElementById('stat-tasks').textContent = totalTasks;
+                document.getElementById('stat-handlers').textContent = totalHandlers;
+                document.getElementById('stat-vars').textContent = totalVars;
+                document.getElementById('stat-modules').textContent = modules.size;
+
+                // Calculate complexity
+                const complexity = totalTasks < 5 ? 'Low' : totalTasks < 15 ? 'Medium' : 'High';
+                document.getElementById('stat-complexity').textContent = complexity;
+
+                // Display modules
+                const modulesList = document.getElementById('modules-list');
+                modulesList.innerHTML = '';
+                modules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.className = 'module-item';
+                    div.textContent = module;
+                    modulesList.appendChild(div);
+                });
+
+                // Display variables
+                const tbody = document.querySelector('#variables-table tbody');
+                tbody.innerHTML = '';
+                variables.forEach(v => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${v.name}</td>
+                        <td>${v.value}</td>
+                        <td>${v.play}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Best practices check
+                const practices = document.getElementById('best-practices');
+                practices.innerHTML = '';
+
+                const checks = [];
+
+                // Check for task names
+                let unnamedTasks = 0;
+                parsed.forEach(play => {
+                    if (play.tasks) {
+                        play.tasks.forEach(task => {
+                            if (!task.name) unnamedTasks++;
+                        });
+                    }
+                });
+
+                if (unnamedTasks === 0) {
+                    checks.push({ type: 'success', msg: '✅ All tasks are named' });
+                } else {
+                    checks.push({ type: 'warning', msg: `⚠️ ${unnamedTasks} unnamed task(s) found` });
+                }
+
+                // Check for play names
+                const unnamedPlays = parsed.filter(p => !p.name).length;
+                if (unnamedPlays === 0) {
+                    checks.push({ type: 'success', msg: '✅ All plays are named' });
+                } else {
+                    checks.push({ type: 'warning', msg: `⚠️ ${unnamedPlays} unnamed play(s) found` });
+                }
+
+                // Check for handlers
+                if (totalHandlers > 0) {
+                    checks.push({ type: 'success', msg: '✅ Handlers are being used' });
+                } else {
+                    checks.push({ type: 'info', msg: 'ℹ️ No handlers defined (consider using them for service restarts)' });
+                }
+
+                // Check for variables
+                if (totalVars > 0) {
+                    checks.push({ type: 'success', msg: '✅ Variables are being used for configuration' });
+                }
+
+                checks.forEach(check => {
+                    const div = document.createElement('div');
+                    div.className = `practice-item ${check.type === 'warning' ? 'warning' : check.type === 'error' ? 'error' : ''}`;
+                    div.textContent = check.msg;
+                    practices.appendChild(div);
+                });
+
+            } catch (e) {
+                alert('Error analyzing playbook: ' + e.message);
+            }
+        }
+
+        function runLinter() {
+            try {
+                const playbook = document.getElementById('playbook').value;
+                const parsed = jsyaml.load(playbook);
+                const results = document.getElementById('lint-results');
+                results.innerHTML = '<h3>Lint Results:</h3>';
+
+                const issues = [];
+
+                if (!Array.isArray(parsed)) {
+                    issues.push({ level: 'error', msg: 'Playbook must be a list of plays' });
+                    displayLintResults(issues);
+                    return;
+                }
+
+                parsed.forEach((play, playIndex) => {
+                    // Check play structure
+                    if (!play.name) {
+                        issues.push({ level: 'warning', msg: `Play ${playIndex + 1}: Missing play name` });
+                    }
+
+                    if (!play.hosts) {
+                        issues.push({ level: 'error', msg: `Play ${playIndex + 1}: Missing hosts directive` });
+                    }
+
+                    // Check tasks
+                    if (play.tasks) {
+                        play.tasks.forEach((task, taskIndex) => {
+                            if (!task.name) {
+                                issues.push({ level: 'warning', msg: `Play ${playIndex + 1}, Task ${taskIndex + 1}: Missing task name` });
+                            }
+
+                            // Check for deprecated modules
+                            if (task.include) {
+                                issues.push({ level: 'warning', msg: `Play ${playIndex + 1}, Task ${taskIndex + 1}: 'include' is deprecated, use 'include_tasks' or 'import_tasks'` });
+                            }
+
+                            // Check for shell/command usage
+                            if (task.shell || task.command) {
+                                issues.push({ level: 'info', msg: `Play ${playIndex + 1}, Task ${taskIndex + 1}: Consider using specific modules instead of shell/command` });
+                            }
+
+                            // Check for bare variables
+                            Object.values(task).forEach(value => {
+                                if (typeof value === 'string' && value.match(/^\{\{[^}]+\}\}$/)) {
+                                    issues.push({ level: 'info', msg: `Play ${playIndex + 1}, Task ${taskIndex + 1}: Bare variable usage detected, consider quoting` });
+                                }
+                            });
+                        });
+                    }
+
+                    // Check for become usage
+                    if (play.become === true) {
+                        issues.push({ level: 'info', msg: `Play ${playIndex + 1}: Using 'become' for entire play - consider task-level usage for better security` });
+                    }
+                });
+
+                if (issues.length === 0) {
+                    issues.push({ level: 'info', msg: '✅ No issues found! Your playbook follows best practices.' });
+                }
+
+                displayLintResults(issues);
+
+            } catch (e) {
+                document.getElementById('lint-results').innerHTML = `<div class="lint-item error">❌ Lint Error: ${e.message}</div>`;
+            }
+        }
+
+        function displayLintResults(issues) {
+            const results = document.getElementById('lint-results');
+            
+            issues.forEach(issue => {
+                const div = document.createElement('div');
+                div.className = `lint-item ${issue.level}`;
+                
+                let icon = 'ℹ️';
+                if (issue.level === 'warning') icon = '⚠️';
+                if (issue.level === 'error') icon = '❌';
+                if (issue.msg.startsWith('✅')) icon = '';
+                
+                div.textContent = `${icon} ${issue.msg}`;
+                results.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
