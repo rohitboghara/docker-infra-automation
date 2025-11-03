@@ -14,14 +14,13 @@ This project automates Docker server setup, container deployment, and maintenanc
 - Clean & modular Roles structure
 
 ## 📂 Project Structure
-```
+
 
 ├── deploy.yml                # Setup Docker infra
 ├── docker_management.yml     # Manage Containers & Images
 ├── hosts.ini                 # Target hosts
 └── roles/                    # Ansible roles
 
-````
 
 ## 🛠️ Requirements
 - Linux Server (Ubuntu/CentOS/Debian)
